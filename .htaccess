@@ -1,0 +1,6 @@
+RewriteEngine On
+RewriteBase /Trees
+RewriteCond %{REQQUEST_FILENAME} !-f
+RewriteCond %{REQQUEST_FILENAME} !-d
+RewriteCond $1 !^(index\.php|public|assets|images|robots\.txt)
+RewriteRule ^(.*)$ index.php/$1 [L]

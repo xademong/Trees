@@ -224,7 +224,7 @@ $config['cache_path'] = '';
 | MUST set an encryption key.  See the user guide for info.
 |
 */
-$config['encryption_key'] = '';
+$config['encryption_key'] = 'test_encrption_key';
 
 /*
 |--------------------------------------------------------------------------
@@ -357,6 +357,20 @@ $config['rewrite_short_tags'] = FALSE;
 */
 $config['proxy_ips'] = '';
 
+function __autoload($class)
+{
+	if (strpos($class, 'CI_') !== 0)
+	{
+		if (file_exists($file = APPPATH . 'core/' . $class . EXT))
+		{
+			include $file;
+		}
+		else if (file_exists($file = APPPATH . 'libraries/' . $class . EXT))
+		{
+			include $file;
+		}
+	}
+}
 
 /* End of file config.php */
 /* Location: ./application/config/config.php */
