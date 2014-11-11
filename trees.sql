@@ -1,6 +1,6 @@
 /*
 SQLyog Enterprise - MySQL GUI v8.12 
-MySQL - 5.5.16 : Database - trees
+MySQL - 5.6.20 : Database - trees
 *********************************************************************
 */
 
@@ -22,6 +22,21 @@ CREATE TABLE `compounds` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /*Data for the table `compounds` */
+
+/*Table structure for table `keys` */
+
+DROP TABLE IF EXISTS `keys`;
+
+CREATE TABLE `keys` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `key` varchar(40) NOT NULL,
+  `level` int(2) NOT NULL,
+  `ignore_limits` tinyint(1) NOT NULL DEFAULT '0',
+  `date_created` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Data for the table `keys` */
 
 /*Table structure for table `medias` */
 

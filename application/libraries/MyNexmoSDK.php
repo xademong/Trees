@@ -18,9 +18,6 @@ require APPPATH.'/libraries/Nexmo/NexmoReceipt.php';
  * @link		http://codeigniter.com/user_guide/libraries/email.html
  */
 class MyNexmoSDK {
-	var $NEXMO_API_KEY		=	"";
-	var $NEXMO_API_SECRET	=	"";
-
 	var $error 				= 	"";
 	var $errorCode 			= 	0;
 	var $errorFlag 			= 	FALSE;
@@ -117,7 +114,7 @@ class MyNexmoSDK {
 		}
 
 		// Step 1: Declare new NexmoMessage.
-		$nexmo_sms = new NexmoMessage($this->NEXMO_API_KEY, $this->NEXMO_API_SECRET);
+		$nexmo_sms = new NexmoMessage(NEXMO_API_KEY, NEXMO_API_SECRET);
 
 		// Step 2: Use sendText( $to, $from, $message ) method to send a message. 
 		$info = $nexmo_sms->sendText( $recipientNumber, 'Trees App', $text );
@@ -140,11 +137,11 @@ class MyNexmoSDK {
 	 */
 	function sendCode($recipientNumber, $language, $code) {
 		
-		echo "*** $recipientNumber\n";
+		//echo "*** $recipientNumber\n";
 		
 		// treat american numbers differently
 		if (substr($recipientNumber, 0, 1) == "1") {
-			echo "US";
+			//echo "US";
 			// send code in special us format
 			sendUSCode($recipientNumber, $code);
 		} else {
@@ -156,7 +153,7 @@ class MyNexmoSDK {
 			}
 
 			// Step 1: Declare new NexmoMessage.
-			$nexmo_sms = new NexmoMessage($this->NEXMO_API_KEY, $this->NEXMO_API_SECRET);
+			$nexmo_sms = new NexmoMessage(NEXMO_API_KEY, NEXMO_API_SECRET);
 
 			// Step 2: Use sendText( $to, $from, $message ) method to send a message. 
 			$info = $nexmo_sms->sendText( $recipientNumber, 'Trees App', $text );
@@ -179,9 +176,9 @@ class MyNexmoSDK {
 	 */
 	function sendUSCode($recipientNumber, $code) {
 
-		$url = "https://rest.nexmo.com/sc/us/2fa/json?api_key=" . $this->NEXMO_API_KEY . "&api_secret=" . $this->NEXMO_API_SECRET . "&to=" . $recipientNumber . "&pin=" . $code;
+		$url = "https://rest.nexmo.com/sc/us/2fa/json?api_key=" . NEXMO_API_KEY . "&api_secret=" . NEXMO_API_SECRET . "&to=" . $recipientNumber . "&pin=" . $code;
 		
-		echo "\n" . $url;
+		//echo "\n" . $url;
 		
 	    // create curl resource 
 	    $ch = curl_init(); 

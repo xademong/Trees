@@ -1,0 +1,80 @@
+/*======================================================================
+Get all users 
+*======================================================================/
+
+URL: /api/user/all
+
+METHOD: GET
+
+REQUEST:
+
+RESPONSE:
+	[
+	    {
+	        "id": "1",
+	        "prefix": "86",
+	        "number": "18245730118",
+	        "full_number": "86",
+	        "first_name": "Xa",
+	        "last_name": "DeMong",
+	        "user_image": null,
+	        "cdn_url": null,
+	        "code": "1111",
+	        "device_token": "11111111111111",
+	        "active": "0"
+	    }
+	]	
+
+/*======================================================================
+Register user
+*======================================================================/
+
+URL: /api/user
+
+METHOD: POST
+
+REQUEST:
+
+RESPONSE:
+	[
+	    {
+	        "id": "1",
+	        "prefix": "86",
+	        "number": "18245730118",
+	        "full_number": "86",
+	        "first_name": "Xa",
+	        "last_name": "DeMong",
+	        "user_image": null,
+	        "cdn_url": null,
+	        "code": "1111",
+	        "device_token": "11111111111111",
+	        "active": "0"
+	    }
+	]	
+
+/*======================================================================
+Update user
+*======================================================================/
+
+URL: /api/user
+
+METHOD: PUT
+
+REQUEST:
+
+RESPONSE:
+	[
+	    {
+	        "id": "1",
+	        "prefix": "86",
+	        "number": "18245730118",
+	        "full_number": "86",
+	        "first_name": "Xa",
+	        "last_name": "DeMong",
+	        "user_image": null,
+	        "cdn_url": null,
+	        "code": "1111",
+	        "device_token": "11111111111111",
+	        "active": "0"
+	    }
+	]	

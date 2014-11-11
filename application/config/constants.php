@@ -36,6 +36,29 @@ define('FOPEN_READ_WRITE_CREATE',				'a+b');
 define('FOPEN_WRITE_CREATE_STRICT',				'xb');
 define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
 
+/*
+|--------------------------------------------------------------------------
+| Custom API Constants
+|--------------------------------------------------------------------------
+|
+| These modes are used when working with apis
+|
+*/
+
+define('USER_CREATED_SUCCESSFULLY',		0);
+define('USER_CREATE_FAILED',			1);
+define('USER_ALREADY_EXISTED',			2); 
+define('USER_VALIDATED_SUCCESSFULLY',	0); 
+define('USER_VALIDATE_FAILED',			1);
+define('USER_DELETED_SUCCESSFULLY',		0);
+define('USER_DELETE_FAILED',			1);
+define('USER_UPDATED_SUCCESSFULLY',		0);
+define('USER_UPDATE_FAILED',			0);
+
+//define('API_KEY', 'bf45c093e542f057caee68c47787e7d6');
+
+define('NEXMO_API_KEY', 	'16fb9b2a');
+define('NEXMO_API_SECRET',	'7f90d35a');
 
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

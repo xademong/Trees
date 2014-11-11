@@ -35,7 +35,8 @@ class User extends REST_Controller
         // you have created the 'limits' table and enabled 'limits'
         // within application/config/rest.php
 
-        //$this->load->model('user_model');
+        //$this->load->library('MyNexmoSDK');
+        $this->load->model('user_model');
         //$this->user_model->get();
     }
     
@@ -49,11 +50,6 @@ class User extends REST_Controller
      */
     function index_get()
     {
-        if(!$this->get('id'))
-        {
-        	$this->response(NULL, 400);
-        }
-
         // $user = $this->some_model->getSomething( $this->get('id') );
     	$users = array(
 			1 => array('id' => 1, 'name' => 'Some Guy', 'email' => 'example1@example.com', 'fact' => 'Loves swimming'),
@@ -84,10 +80,37 @@ class User extends REST_Controller
      */
     function index_post()
     {
-        //$this->some_model->updateUser( $this->get('id') );
-        $message = array('id' => $this->get('id'), 'name' => $this->post('name'), 'email' => $this->post('email'), 'message' => 'ADDED!');
+        //$userimage = file_get_contents($_FILES["userimage"]["tmp_name"], true);
+        $body = array(
+                'prefix' =>  $this->post('prefix'),
+                'number' =>  $this->post('number'),
+                'full_number' =>  $this->post('full_number'),
+                'first_name' =>  $this->post('first_name'),
+                'last_name' =>  $this->post('last_name'),
+                'user_image' =>  $this->post('user_image'),
+                'cdn_url' =>  $this->post('cdn_url'),
+                'code' => rand(1000, 9999),
+                'device_token' =>  $this->post('device_token'),
+                'active' =>  false
+            );
+
+        $result = $this->user_model->insert_user($body);
         
-        $this->response($message, 200); // 200 being the HTTP response code
+        if ($result == USER_ALREADY_EXISTED) 
+        {
+            $this->response(array('error' => 'User already exists'), 400);
+        }
+        else if ($result){
+            $body['id'] = $result;
+            $recipient_number = $body['prefix'] . $body['number'];
+            $language = "en";
+            $this->mynexmosdk->sendCode($recipient_number, $language, $body['code']);
+            $this->response($body, 200); // 200 being the HTTP response code
+        }
+        else 
+        {
+            $this->response(array('error' => 'faild to create user'), 400);
+        }          
     }
     
     // --------------------------------------------------------------------
@@ -100,30 +123,29 @@ class User extends REST_Controller
      */
     function index_put()
     {
-        /*verifyRequiredParams(array('prefix', 'number'));
+        //verifyRequiredParams(array('prefix', 'number'));
 
-        // reading post params
-        $prefix = $app->request->post('prefix');
-        $number = $app->request->post('number');
-        $firstname = $app->request->post('firstname');
-        $lastname = $app->request->post('lastname');
-        
-        // update data in db
-        $db = new DbHandler();
-        $res = $db->updateUser($prefix, $number, $firstname, $lastname);
+        $body = array(
+                'prefix' =>  $this->put('prefix'),
+                'number' =>  $this->put('number'),
+                'full_number' =>  $this->put('full_number'),
+                'first_name' =>  $this->put('first_name'),
+                'last_name' =>  $this->put('last_name'),
+                'code' => rand(1000, 9999)
+            );
 
-        // create response
-        $response = array();
-        if ($res == USER_UPDATED_CODE_SUCCESSFULLY) {   
-
-            $response["error"] = false;
-            $response["message"] = "Information updated successfully.";
-            echoRespnse(201, $response);
-        } else if ($res == USER_UPDATE_CODE_FAILED) {
-            $response["error"] = true;
-            $response["message"] = "Oops! An error occurred while updating user data.";
-            echoRespnse(200, $response);
-        }*/
+        $result = $this->user_model->update_user($body);
+        if ($result == USER_UPDATED_SUCCESSFULLY) 
+        {
+            $recipient_number = $body['prefix'] . $body['number'];
+            $language = "en";
+            $this->myfacebooksdk->sendCode($recipient_number, $language, $body['code']);
+            $this->response($body, 200); // 200 being the HTTP response code
+        }
+        else 
+        {
+            $this->response(array('error' => 'faild to create user'), 400);
+        }
     }
 
     // --------------------------------------------------------------------
@@ -136,37 +158,7 @@ class User extends REST_Controller
      */
     function index_delete()
     {
-    	/*verifyRequiredParams(array('prefix', 'number'));
-
-        // reading post params
-        $prefix = $app->request->post('prefix');
-        $number = $app->request->post('number');
-        
-        // create 4 digit code to verifiy user
-        $code = rand(1000, 9999);
-        
-        // update code in db
-        $db = new DbHandler();
-        $res = $db->updateCode($prefix, $number,$code);
-
-        // create response
-        $response = array();
-        if ($res == USER_UPDATED_CODE_SUCCESSFULLY) {   
-            // send sms with code to user's phone
-            $recipientNumber = $prefix . $number;
-            $language = "en";
-            sendDeletionCode($recipientNumber, $language, $code);
-
-            // send code back to user
-            $response["error"] = false;
-            $response["message"] = "SMS with deletion code sent.";
-            $response["code"] = $code;
-            echoRespnse(201, $response);
-        } else if ($res == USER_UPDATE_CODE_FAILED) {
-            $response["error"] = true;
-            $response["message"] = "Oops! An error occurred while deeleting user.";
-            echoRespnse(200, $response);
-        }*/
+    	
     }
     
     // --------------------------------------------------------------------
@@ -179,18 +171,11 @@ class User extends REST_Controller
      */
     function all_get()
     {
-        //$users = $this->some_model->getSomething( $this->get('limit') );
-        $users = array(
-			array('id' => 1, 'name' => 'Some Guy', 'email' => 'example1@example.com'),
-			array('id' => 2, 'name' => 'Person Face', 'email' => 'example2@example.com'),
-			3 => array('id' => 3, 'name' => 'Scotty', 'email' => 'example3@example.com', 'fact' => array('hobbies' => array('fartings', 'bikes'))),
-		);
-        
+        $users = $this->user_model->get_all_users();
         if($users)
         {
             $this->response($users, 200); // 200 being the HTTP response code
         }
-
         else
         {
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
@@ -205,68 +190,9 @@ class User extends REST_Controller
      * @access  public
      * @return  void
      */
-    function signup_post()
+    function login_post()
     {
-        /*
-        verifyRequiredParams(array('prefix', 'number'));
-
-        // reading post params
-        $firstname = $app->request->post('firstname');
-        $lastname = $app->request->post('lastname');
-        $prefix = $app->request->post('prefix');
-        $number = $app->request->post('number');
-        $devicetoken = $app->request->post('devicetoken');
-        $active = 0;
-
-        // load image and audio files
-        $userimage = file_get_contents($_FILES["userimage"]["tmp_name"], true);
         
-        // create 4 digit code to verifiy user
-        $code = rand(1000, 9999);
-        
-        // create db call
-        $db = new DbHandler();
-        $res = $db->createUser($firstname, $lastname, $prefix, $number, $userimage, $code, $active, $devicetoken);
-
-        // create response
-        $response = array();
-        if ($res == USER_CREATED_SUCCESSFULLY) {
-            #error_log("USER_CREATED_SUCCESSFULLY");
-            // send sms with code to user's phone
-            $recipientNumber = $prefix . $number;
-            $language = "en";
-            sendCode($recipientNumber, $language, $code);
-
-            // send code back to user
-            $response["error"] = false;
-            $response["message"] = "You are successfully registered.";
-            $response["code"] = $code;
-            echoRespnse(201, $response);
-        } else if ($res == USER_CREATE_FAILED) {
-            #error_log("USER_CREATE_FAILED");
-            $response["error"] = true;
-            $response["message"] = "Oops! An error occurred while registering.";
-            echoRespnse(200, $response);
-        } else if ($res == USER_ALREADY_EXISTED) {
-            #error_log("USER_ALREADY_EXISTED");
-            $response["error"] = true;
-            $response["message"] = "Sorry, this number is already registered.";
-            echoRespnse(200, $response);
-        } 
-        // user is registered but not validated
-        else {      
-            # error_log("JUST CODE");
-     
-            // send sms with code to user's phone
-            $recipientNumber = $prefix . $number;
-            $language = "en";
-            sendCode($recipientNumber, $language, $res);
-     
-            $response["error"] = true;
-            $response["code"] = $res;
-            echoRespnse(200, $response);
-        }
-        */
     }
 
     // --------------------------------------------------------------------
@@ -277,11 +203,28 @@ class User extends REST_Controller
      * @access  public
      * @return  void
      */
-    function login_post()
+    function validate_post()
     {
-        //$this->some_model->updateUser( $this->get('id') );
-        $message = array('id' => $this->get('id'), 'name' => $this->post('name'), 'email' => $this->post('email'), 'message' => 'ADDED!');
         
-        $this->response($message, 200); // 200 being the HTTP response code
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Verification api params
+     *
+     * @access  private
+     * @param   string
+     * @param   array
+     * @return  void
+     */
+    function _verify_params($method, $params) 
+    {
+        /*
+        if(!$this->get('id'))
+        {
+            $this->response(NULL, 400);
+        }
+        */
     }
 }

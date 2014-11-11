@@ -14,9 +14,16 @@
 
 class User_model extends CI_Model {
 
-    var $title   = '';
-    var $content = '';
-    var $date    = '';
+    var $prefix         = '';
+    var $number         = '';
+    var $full_number    = '';
+    var $first_name     = '';
+    var $last_name      = '';
+    var $user_image     = '';
+    var $cdn_url        = '';
+    var $code           = '';
+    var $device_token   = '';
+    var $active         = '';
 
     // --------------------------------------------------------------------
 
@@ -40,10 +47,42 @@ class User_model extends CI_Model {
      * @access  public
      * @return  void
      */
-    function get_last_ten_entries()
+    function get_all_users()
     {
-        $query = $this->db->get('entries', 10);
-        return $query->result();
+        $query = $this->db->get('users');
+        return $query->result(); //result_array()
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Insert user into db
+     *
+     * @access  public
+     * @return  void
+     */
+    function insert_user($user)
+    {
+        $this->prefix         = $user['prefix'];
+        $this->number         = $user['number'];
+        $this->full_number    = $user['full_number'];
+        $this->first_name     = $user['first_name'];
+        $this->last_name      = $user['last_name'];
+        $this->user_image     = $user['user_image'];
+        $this->cdn_url        = $user['cdn_url'];
+        $this->code           = $user['code'];
+        $this->device_token   = $user['device_token'];
+        $this->active         = $user['active'];
+
+        if ($this->is_existing($this->prefix, $this->number))
+        {
+            return USER_ALREADY_EXISTED;
+        }
+        else
+        {
+            $this->db->insert('users', $this);
+            return $this->db->insert_id();
+        }
     }
 
     // --------------------------------------------------------------------
@@ -54,30 +93,28 @@ class User_model extends CI_Model {
      * @access  public
      * @return  void
      */
-    function insert_entry()
+    function update_user($user)
     {
-        $this->title   = $_POST['title']; // please read the below note
-        $this->content = $_POST['content'];
-        $this->date    = time();
-
-        $this->db->insert('entries', $this);
+        $id = $user['id'];
+        foreach($user as $key=>$val) {
+            $this->$key = $val;
+        }
+        $this->db->update('users', $this, array('id' => $id));
+        return USER_UPDATED_SUCCESSFULLY;
     }
 
     // --------------------------------------------------------------------
 
     /**
-     * Constructor
+     * Check if user exists already
      *
      * @access  public
      * @return  void
      */
-    function update_entry()
+    function is_existing($prefix, $number)
     {
-        $this->title   = $_POST['title'];
-        $this->content = $_POST['content'];
-        $this->date    = time();
-
-        $this->db->update('entries', $this, array('id' => $_POST['id']));
+        $query = $this->db->query("SELECT * FROM users WHERE prefix='$prefix' AND number='$number'");
+        return ($query->num_rows() >= 1) ? TRUE : FALSE;
     }
 }
 
